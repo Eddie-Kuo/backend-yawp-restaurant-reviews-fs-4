@@ -23,4 +23,16 @@ describe('restaurant routes', () => {
       image: expect.any(String),
     });
   });
+
+  test('GET /api/v1/restaurants/:id', async () => {
+    const res = await request(app).get('/api/v1/restaurants/1');
+    expect(res.body).toEqual({
+      id: expect.any(String),
+      name: expect.any(String),
+      cuisine: expect.any(String),
+      cost: expect.any(Number),
+      image: expect.any(String),
+    });
+    expect(res.status).toBe(200);
+  });
 });
