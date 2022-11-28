@@ -2,7 +2,23 @@ const setup = require('../data/setup');
 const pool = require('../lib/utils/pool');
 const request = require('supertest');
 const app = require('../lib/app');
-// const UserService = require('../lib/services/UserService'); depending if I put in the reviews testing here as well
+const UserService = require('../lib/services/UserService');
+
+const mockUser = {
+  email: 'mockUser@testing.com',
+  password: '123456',
+  firstName: 'Mock',
+  lastName: 'U',
+};
+
+const registerAndLogin = async () => {
+  const agent = request.agent(app);
+  const user = await UserService.create(mockUser);
+  await agent
+    .post('/api/v1/users')
+    .send({ email: mockUser.email, password: mockUser.password });
+  return [agent, user];
+};
 
 describe('restaurant routes', () => {
   beforeEach(() => {
@@ -33,6 +49,13 @@ describe('restaurant routes', () => {
       cost: expect.any(Number),
       image: expect.any(String),
     });
+    expect(res.status).toBe(200);
+  });
+
+  test('POST /api/v1/restaurants/:restId/reviews', async () => {
+    const res = await request(app)
+      .post('/api/v1/restaurants/1/reviews')
+      .send({ stars: 5, detail: 'It was okay' });
     expect(res.status).toBe(200);
   });
 });
