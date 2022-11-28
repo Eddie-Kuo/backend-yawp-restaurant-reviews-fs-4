@@ -20,6 +20,7 @@ describe('restaurant routes', () => {
       name: expect.any(String),
       cuisine: expect.any(String),
       cost: expect.any(Number),
+      image: expect.any(String),
     });
   });
 });
