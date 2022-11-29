@@ -4,22 +4,6 @@ const request = require('supertest');
 const app = require('../lib/app');
 const UserService = require('../lib/services/UserService');
 
-const mockUser = {
-  email: 'mockUser@testing.com',
-  password: '123456',
-  firstName: 'Mock',
-  lastName: 'U',
-};
-
-const registerAndLogin = async () => {
-  const agent = request.agent(app);
-  const user = await UserService.create(mockUser);
-  await agent
-    .post('/api/v1/users')
-    .send({ email: mockUser.email, password: mockUser.password });
-  return [agent, user];
-};
-
 describe('restaurant routes', () => {
   beforeEach(() => {
     return setup(pool);
@@ -27,6 +11,21 @@ describe('restaurant routes', () => {
   afterAll(() => {
     pool.end();
   });
+  const mockUser = {
+    email: 'mockUser@testing.com',
+    password: '123456',
+    firstName: 'Mock',
+    lastName: 'U',
+  };
+
+  const registerAndLogin = async () => {
+    const agent = request.agent(app);
+    const user = await UserService.create(mockUser);
+    await agent
+      .post('/api/v1/users/sessions')
+      .send({ email: mockUser.email, password: mockUser.password });
+    return [agent, user];
+  };
 
   test('GET /api/v1/restaurants', async () => {
     const res = await request(app).get('/api/v1/restaurants');
@@ -53,7 +52,8 @@ describe('restaurant routes', () => {
   });
 
   test('POST /api/v1/restaurants/:restId/reviews', async () => {
-    const res = await request(app)
+    const [agent] = await registerAndLogin();
+    const res = await agent
       .post('/api/v1/restaurants/1/reviews')
       .send({ stars: 5, detail: 'It was okay' });
     expect(res.status).toBe(200);
