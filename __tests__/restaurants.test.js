@@ -58,4 +58,10 @@ describe('restaurant routes', () => {
       .send({ stars: 5, detail: 'It was okay' });
     expect(res.status).toBe(200);
   });
+
+  test('DELETE /api/v1/reviews/:id', async () => {
+    const [agent] = await registerAndLogin();
+    const res = await agent.delete('/api/v1/reviews/1');
+    expect(res.status).toBe(204);
+  });
 });
